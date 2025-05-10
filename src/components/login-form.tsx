@@ -28,19 +28,17 @@ const LoginForm: React.FC = () => {
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log('Pom Pom Gaming')
     try {
       setLoading(true);
       const response = await axios.post("/api/users/login", user);
       if (response.status === 200) {
         console.log("Response data:", response.data);
-        toast.success("Logged in successfully.");
-        router.push("/");
+        toast.success("Valid Credentials.");
+        router.push("/verify-email");
       } else {
         toast.error("Unexpected response. Please try again.");
       }
     } catch (error: any) {
-      console.log('Pom Pom Gaming Part 3')
       toast.error("Failed to login.");
       setLoading(false);
     } finally {
