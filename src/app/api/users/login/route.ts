@@ -12,8 +12,7 @@ async function sendVerificationCode(email: string) {
             from: 'onboarding@resend.dev',
             to: 'randomboiii069@gmail.com',
             subject: 'Secure Shell - OTP Verification',
-            html: `<h1>Your OTP Code for Secure Shell ${otp}</h1>`,
-            text: `Your OTP is ${otp}`
+            html: `<h4>Your OTP Code for Secure Shell <b>${otp}</b></h4>`,
         });
     } catch (error) {
         console.error("Failed to send email:", error);
@@ -22,16 +21,6 @@ async function sendVerificationCode(email: string) {
 
 }
 
-async function sendMagicLink(email: string) {
-    const { data, error } = await supabaseClient.auth.signInWithOtp({
-        email: email,
-        options: {
-            shouldCreateUser: true,
-        },
-    });
-
-    return { data, error };
-}
 
 
 
@@ -51,8 +40,6 @@ export async function POST(request: NextRequest) {
             email,
             password,
         });
-
-        // Handle Supabase error
         if (error) {
             return NextResponse.json(
                 { error: error.message || "Authentication failed." },
@@ -77,24 +64,17 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // To send OTP to the user's email
-        await sendVerificationCode(email).then(() => {
-            console.log("Verification code sent to email:", email);
-        }
-        ).catch((error) => {
-            console.error("Error sending verification code:", error);
-            return NextResponse.json(
-                { error: "Failed to send verification code." },
-                { status: 500 }
-            );
-        }
-        );
-
-        
-
-
-
-
+        // await sendVerificationCode(email).then(() => {
+        //     console.log("Verification code sent to email:", email);
+        // }
+        // ).catch((error) => {
+        //     console.error("Error sending verification code:", error);
+        //     return NextResponse.json(
+        //         { error: "Failed to send verification code." },
+        //         { status: 500 }
+        //     );
+        // }
+        // );
         return NextResponse.json(
             { message: "Logged In successfully.", success: true, data: user },
             { status: 200 }

@@ -28,22 +28,31 @@ const LoginForm: React.FC = () => {
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    try {
-      setLoading(true);
+    setLoading(true);
+
+    // Wrap the login request in a Promise to use with toast.promise
+    const loginRequest = async () => {
       const response = await axios.post("/api/users/login", user);
       if (response.status === 200) {
         console.log("Response data:", response.data);
-        toast.success("Valid Credentials.");
-        router.push("/verify-email");
+        return "Valid Credentials."; // return success message
       } else {
-        toast.error("Unexpected response. Please try again.");
+        throw new Error("Unexpected response. Please try again.");
       }
-    } catch (error: any) {
-      toast.error("Failed to login.");
-      setLoading(false);
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    // Use toast.promise with the loginRequest function
+    toast.promise(loginRequest(), {
+      loading: 'Logging in...',
+      success: <b>Successfully logged in!</b>,
+      error: (err) => <b>{err.message || "Failed to login."}</b>,
+    })
+      .then(() => {
+        router.push("/"); // Navigate on success
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
   useEffect(() => {
     setIsValidData(user.email.length > 0 && user.password.length > 0);
@@ -104,7 +113,7 @@ const LoginForm: React.FC = () => {
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
                     <a
-                      href="#"
+                      href="/forget-password"
                       className="ml-auto text-sm underline-offset-4 hover:underline"
                     >
                       Forgot your password?
