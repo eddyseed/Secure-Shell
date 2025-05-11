@@ -6,6 +6,7 @@ async function sendMagicLink(email: string) {
         options: {
             shouldCreateUser: true,
         },
+        
     });
 
     return { data, error };
