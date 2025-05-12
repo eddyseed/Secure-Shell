@@ -55,14 +55,14 @@ const LoginForm: React.FC = () => {
         setLoading(false);
       });
   };
- 
-  
+
+
   const handleOAuthLogin = async (provider: Provider) => {
     setLoading(true);
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider,
       options: {
-      redirectTo: `${window.location.origin}`,
+        redirectTo: `${window.location.origin}`,
       },
     });
     if (error) {
@@ -107,7 +107,7 @@ const LoginForm: React.FC = () => {
                   </svg>
                   Login with Google
                 </Button>
-               
+
               </div>
               <div className="relative text-center text-sm aftser:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-background px-2 text-muted-foreground">
@@ -142,8 +142,8 @@ const LoginForm: React.FC = () => {
                       setUser((prev) => ({ ...prev, password: e.target.value }))
                     } />
                 </div>
-                <Button type="submit" className="w-full" disabled={!isValidData}>
-                  Login
+                <Button type="submit" className="w-full" disabled={!isValidData || loading}>
+                  {loading ? "Logging in..." : "Login"}
                 </Button>
               </div>
               <div className="text-center text-sm">
