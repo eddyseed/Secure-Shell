@@ -11,13 +11,13 @@ import { ProviderIcon } from "@/components/provider-icon";
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from "react-hot-toast"
 import { useAppMetadata } from "@/context/AppMetadataContext"
-
+import Image from "next/image"
 const SignupForm: React.FC = () => {
     const [user, setUser] = useState({
         email: "",
         password: "",
     });
-    const {APP_NAME, OAUTH_PROVIDERS, SIGNUP_IMG_LINK} = useAppMetadata();
+    const { APP_NAME, OAUTH_PROVIDERS, SIGNUP_IMG_LINK } = useAppMetadata();
     const providers = OAUTH_PROVIDERS
     const [isValidData, setIsValidData] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -44,20 +44,22 @@ const SignupForm: React.FC = () => {
             success: <b>Please check the inbox of {user.email} for further instructions.</b>,
             error: (err: unknown) => {
                 if (
-                  typeof err === "object" &&
-                  err !== null &&
-                  "response" in err &&
-                  typeof (err as any).response === "object" &&
-                  "data" in (err as any).response &&
-                  typeof (err as any).response.data === "object" &&
-                  "error" in (err as any).response.data
+                    err &&
+                    typeof err === "object" &&
+                    "response" in err &&
+                    err.response &&
+                    typeof err.response === "object" &&
+                    "data" in err.response &&
+                    typeof err.response.data === "object" &&
+                    err?.response?.data && "error" in err.response.data
                 ) {
-                  return <b>{(err as any).response.data.error}</b>;
+                    const error = (err as { response: { data: { error: string } } }).response.data.error;
+                    return <b>{error}</b>;
                 }
-        
+
                 return <b>Failed to signup</b>;
-              },
-            })
+            },
+        })
             .then(() => {
                 router.push("/verify-email");
             })
@@ -158,11 +160,7 @@ const SignupForm: React.FC = () => {
                         </div>
                     </form>
                     <div className="relative hidden bg-muted md:block">
-                        <img
-                            src={SIGNUP_IMG_LINK}
-                            alt="Image"
-                            className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-                        />
+                        <Image src={SIGNUP_IMG_LINK} alt="Image" fill className="absolute inset-0 object-cover dark:brightness-[0.2] dark:grayscale"/>
                     </div>
                 </CardContent>
             </Card>

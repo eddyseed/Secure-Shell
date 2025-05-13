@@ -52,17 +52,19 @@ const LoginForm: React.FC = () => {
       success: <b>Successfully logged in!</b>,
       error: (err: unknown) => {
         if (
+          err && 
           typeof err === "object" &&
-          err !== null &&
           "response" in err &&
-          typeof (err as any).response === "object" &&
-          "data" in (err as any).response &&
-          typeof (err as any).response.data === "object" &&
-          "error" in (err as any).response.data
+          err.response &&
+          typeof err.response === "object" &&
+          "data" in err.response &&
+          typeof err.response.data === "object" &&
+          err?.response?.data && "error" in err.response.data
         ) {
-          return <b>{(err as any).response.data.error}</b>;
+          const error = (err as { response: { data: { error: string } } }).response.data.error;
+          return <b>{error}</b>;
         }
-
+    
         return <b>Failed to login</b>;
       },
     })
