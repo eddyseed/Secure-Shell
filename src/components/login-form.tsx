@@ -40,7 +40,7 @@ const LoginForm: React.FC = () => {
       const response = await axios.post("/api/users/login", user);
       if (response.status === 200) {
         console.log("Response data:", response.data);
-        return "Valid Credentials."; // return success message
+        return "Valid Credentials.";
       } else {
         throw new Error("Unexpected response. Please try again.");
       }
@@ -50,7 +50,23 @@ const LoginForm: React.FC = () => {
     toast.promise(loginRequest(), {
       loading: 'Logging in...',
       success: <b>Successfully logged in!</b>,
-      error: (err: any) => <b>{err?.response?.data?.error || "Failed to login."}</b>,
+      error: (err: unknown) => {
+        if (
+          err && 
+          typeof err === "object" &&
+          "response" in err &&
+          err.response &&
+          typeof err.response === "object" &&
+          "data" in err.response &&
+          typeof err.response.data === "object" &&
+          err?.response?.data && "error" in err.response.data
+        ) {
+          const error = (err as { response: { data: { error: string } } }).response.data.error;
+          return <b>{error}</b>;
+        }
+    
+        return <b>Failed to login</b>;
+      },
     })
       .then(() => {
         router.push("/"); // Navigate on success

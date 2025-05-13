@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
             email,
             password,
             options: {
-                emailRedirectTo: `${process.env.PUBLIC_BASE_URI}/` || "http://localhost:3000"
+                emailRedirectTo: `${process.env.PUBLIC_BASE_URI}/` || "https://secureshell.vercel.app"
             }
         });
 
@@ -41,9 +41,16 @@ export async function POST(request: NextRequest) {
             { status: 200 }
         );
 
-    } catch (error: any) {
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return NextResponse.json(
+                { error: "An error occurred" },
+                { status: 500 }
+            );
+        }
+
         return NextResponse.json(
-            { error: error.message || "An error occurred" },
+            { error: "An unknown error occurred" },
             { status: 500 }
         );
     }

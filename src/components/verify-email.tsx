@@ -7,13 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { useRouter } from "next/navigation";
 import { Toaster } from "react-hot-toast";
-import { Mail } from "lucide-react"; // Assuming you're using lucide-react for icons
+import { Mail } from "lucide-react"; 
 
 const VerifyEmailForm: React.FC = () => {
-  const router = useRouter();
-
   return (
     <div className={"flex flex-col gap-6"}>
       <Toaster />

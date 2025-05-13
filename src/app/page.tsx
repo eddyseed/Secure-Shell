@@ -6,7 +6,7 @@ import { supabaseClient } from "@/config/dbConfig";
 const Home: React.FC = () => {
   const { isLoggedIn, loading } = useAuth();
   const [clientSide, setClientSide] = useState(false);
-  const handleLogOut = async (e: any) => {
+  const handleLogOut = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     await supabaseClient.auth.signOut();
   }
