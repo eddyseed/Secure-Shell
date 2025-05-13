@@ -1,9 +1,10 @@
 'use client'
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { supabaseClient } from "@/config/dbConfig";
+import { Session, User } from "@supabase/supabase-js";
 interface AuthContextProps {
-  session: any;
-  user: any;
+  session: Session | null;
+  user: User | null;
   loading: boolean;
   isLoggedIn: boolean;
 }
@@ -16,8 +17,8 @@ const AuthContext = createContext<AuthContextProps>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [session, setSession] = useState<any>(null);
-  const [user, setUser] = useState<any>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
