@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
 
         if (!email || !password) {
             return NextResponse.json(
-                { error: "Email and password are required." },
+                { error: "Email and password are required" },
                 { status: 400 }
             );
         }
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
         if (error) {
             console.error(error)
             return NextResponse.json(
-                { error: error.message || "Authentication failed." },
+                { error: error.message || "Authentication failed" },
                 { status: 401 }
             );
         }
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
         if (!user) {
             return NextResponse.json(
-                { error: "User does not exist." },
+                { error: "User does not exist" },
                 { status: 404 }
             );
         }
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     } catch (error: any) {
         return NextResponse.json(
-            { error: error.message || "An error occurred." },
+            { error: error.message || "An error occurred" },
             { status: 500 }
         );
     }

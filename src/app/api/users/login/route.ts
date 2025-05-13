@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         });
         if (error) {
             return NextResponse.json(
-                { error: error.message || "Authentication failed." },
+                { error: "Invalid User Credentials" },
                 { status: 401 }
             );
         }
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
         if (!user) {
             return NextResponse.json(
-                { error: "User does not exist." },
+                { error: "User does not exist" },
                 { status: 404 }
             );
         }
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         const token = data?.session?.access_token;
         if (!token) {
             return NextResponse.json(
-                { error: "Failed to get token." },
+                { error: "Failed to fetch token" },
                 { status: 500 }
             );
         }
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
         // }
         // );
         return NextResponse.json(
-            { message: "Logged In successfully.", success: true, data: user },
+            { message: "Logged In successfully", success: true, data: user },
             { status: 200 }
         );
 

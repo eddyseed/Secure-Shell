@@ -1,8 +1,11 @@
+'use client';
 import { GalleryVerticalEnd } from "lucide-react"
 
 import LoginForm from "@/components/login-form"
+import { useAppMetadata } from "@/context/AppMetadataContext";
 
 export default function LoginPage() {
+    const { APP_NAME } = useAppMetadata();
     return (
         <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
             <div className="flex w-full max-w-sm flex-col gap-6">
@@ -10,7 +13,7 @@ export default function LoginPage() {
                     <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
                         <GalleryVerticalEnd className="size-4" />
                     </div>
-                    Secure Shell
+                    {APP_NAME}
                 </a>
                 <LoginForm />
             </div>

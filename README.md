@@ -20,7 +20,7 @@ A plug-and-play authentication microservice built with Supabase and OAuth, suppo
 
 - **Modular & Reusable**: Designed as a microservice for seamless integration in other projects.
 
-### SCREENSHOTS
+## SCREENSHOTS
 1. Signup
 ![Signup-Page-Screenshot](https://ccoxmajldrrpzqgsgufo.supabase.co/storage/v1/object/public/readme-assets//signup-page.png)
 2. Verify-Email
