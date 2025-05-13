@@ -8,7 +8,6 @@ import axios from "axios"
 import { useRouter } from "next/navigation"
 import { Provider } from "@supabase/auth-js";
 import { ProviderIcon } from "@/components/provider-icon";
-const providers = process.env.NEXT_PUBLIC_AUTH_PROVIDERS?.split(",") || [];
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from "react-hot-toast"
 import { useAppMetadata } from "@/context/AppMetadataContext"
@@ -23,7 +22,7 @@ const SignupForm: React.FC = () => {
     const [isValidData, setIsValidData] = useState(false);
     const [loading, setLoading] = useState(false);
     const [confirmedPassword, setConfirmedPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
+    // const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
     const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -43,8 +42,22 @@ const SignupForm: React.FC = () => {
         toast.promise(signupRequest(), {
             loading: 'Taking you there...',
             success: <b>Please check the inbox of {user.email} for further instructions.</b>,
-            error: (err: any) => <b>{err?.response?.data?.error || "Failed to signup."}</b>,
-        })
+            error: (err: unknown) => {
+                if (
+                  typeof err === "object" &&
+                  err !== null &&
+                  "response" in err &&
+                  typeof (err as any).response === "object" &&
+                  "data" in (err as any).response &&
+                  typeof (err as any).response.data === "object" &&
+                  "error" in (err as any).response.data
+                ) {
+                  return <b>{(err as any).response.data.error}</b>;
+                }
+        
+                return <b>Failed to signup</b>;
+              },
+            })
             .then(() => {
                 router.push("/verify-email");
             })
