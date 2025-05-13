@@ -120,3 +120,15 @@
     @apply bg-background text-foreground;
   }
 }
+#__vercel {
+  display: none !important;
+}
+[data-nextjs-toast],
+[data-next-badge-root],
+[data-next-mark],
+[data-next-badge],
+.nextjs-toast {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
