@@ -1,6 +1,8 @@
 import { GalleryVerticalEnd } from "lucide-react";
 import LoginForm from "@/components/login-form";
 import { supabaseClient } from "@/config/dbConfig";
+import InvalidClientUI from "@/components/states/404";
+import InternalServerError from "@/components/states/500";
 
 export default async function LoginPage({ params, searchParams }: {
   params: Promise<{ client: string }>
@@ -22,9 +24,9 @@ export default async function LoginPage({ params, searchParams }: {
     .eq("client_identifier", id)
     .maybeSingle();
   if (error) {
-    console.error('Supabase error:', error);
+    return <InternalServerError />
   } else if (!data) {
-    console.log('No client found with that identifier.');
+    return <InvalidClientUI />
   } else {
     console.log('Client data:', data);
   }

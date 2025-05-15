@@ -1,4 +1,6 @@
 import SignupForm from "@/components/signup-form"
+import InvalidClientUI from "@/components/states/404";
+import InternalServerError from "@/components/states/500";
 import { supabaseClient } from "@/config/dbConfig";
 
 
@@ -7,15 +9,16 @@ export default async function SignupPage({ params, searchParams }: {
   searchParams: Promise<{ id: string }>
 }) {
   const { id } = await searchParams;
+
   const { data, error } = await supabaseClient
     .from("clients")
     .select("*")
     .eq("client_identifier", id)
     .maybeSingle();
   if (error) {
-    console.error('Supabase error:', error);
+    return <InternalServerError />
   } else if (!data) {
-    console.log('No client found with that identifier.');
+    return <InvalidClientUI />
   } else {
     console.log('Client data:', data);
   }
