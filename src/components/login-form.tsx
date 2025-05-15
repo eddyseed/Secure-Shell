@@ -14,20 +14,30 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import React from 'react';
 import toast, { Toaster } from "react-hot-toast";
-import { supabaseClient } from "@/config/dbConfig";
 import { Provider } from "@supabase/auth-js";
 import { ProviderIcon } from "@/components/provider-icon";
-import { useAppMetadata } from "@/context/AppMetadataContext";
-const LoginForm: React.FC = () => {
+import { supabaseClient } from "@/config/dbConfig";
+
+interface app_data {
+  client_name: string;
+  client_identifier: string;
+  redirect_uri: string;
+  oauth_provider: string[];
+  signup_image_url: string;
+}
+interface LoginFormProps {
+  app_data: app_data | null;
+  isValidClient: boolean;
+  error?: string;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ app_data, isValidClient, error }: LoginFormProps) => {
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
-  const { OAUTH_PROVIDERS } = useAppMetadata();
-  const providers = OAUTH_PROVIDERS
   const [isValidData, setIsValidData] = useState(false);
   const [loading, setLoading] = useState(false);
-  // const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   // Handle Email Login Requests
@@ -52,7 +62,7 @@ const LoginForm: React.FC = () => {
       success: <b>Successfully logged in!</b>,
       error: (err: unknown) => {
         if (
-          err && 
+          err &&
           typeof err === "object" &&
           "response" in err &&
           err.response &&
@@ -64,12 +74,12 @@ const LoginForm: React.FC = () => {
           const error = (err as { response: { data: { error: string } } }).response.data.error;
           return <b>{error}</b>;
         }
-    
+
         return <b>Failed to login</b>;
       },
     })
       .then(() => {
-        router.push("/"); // Navigate on success
+        router.push("/");
       })
       .finally(() => {
         setLoading(false);
@@ -81,7 +91,7 @@ const LoginForm: React.FC = () => {
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${process.env.PUBLIC_BASE_URI}`,
+        redirectTo: `${app_data?.redirect_uri}`,
       },
     });
     if (error) {
@@ -91,10 +101,16 @@ const LoginForm: React.FC = () => {
 
   }
   useEffect(() => {
-    setIsValidData(user.email.length > 0 && user.password.length > 6);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/;
+
+    const isEmailValid = emailRegex.test(user.email);
+    const isPasswordValid = passwordRegex.test(user.password);
+
+    setIsValidData(isEmailValid && isPasswordValid);
   }, [user]);
-
-
+  if (error) return <p>{error}</p>
+  if (!isValidClient) return <p>Invalid client ID</p>;
   return (
     <div className={"flex flex-col gap-6"}>
       <Toaster />
@@ -109,21 +125,26 @@ const LoginForm: React.FC = () => {
           <form onSubmit={handleLogin}>
             <div className="grid gap-6">
               <div className="flex flex-col gap-4">
-                {providers.map((provider) => (
-                  <Button
-                    key={provider}
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleOAuthLogin(provider as Provider);
-                    }}
-                  >
-                    <ProviderIcon provider={provider as Provider} />
-                    {`Login with ${provider.charAt(0).toUpperCase() + provider.slice(1)}`}
-                  </Button>
-                ))}
+                {app_data?.oauth_provider.map((provider) => {
+                  const formattedProvider = provider.charAt(0).toUpperCase() + provider.slice(1);
+
+                  return (
+                    <Button
+                      key={provider}
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleOAuthLogin(formattedProvider as Provider);
+                      }}
+                    >
+                      <ProviderIcon provider={formattedProvider as Provider} />
+                      {`Login with ${formattedProvider}`}
+                    </Button>
+                  );
+                })}
+
 
               </div>
               <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
@@ -165,7 +186,7 @@ const LoginForm: React.FC = () => {
               </div>
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <a href="/signup" className="underline underline-offset-4">
+                <a href={`/signup/client?id=${app_data?.client_identifier}`} className="underline underline-offset-4">
                   Sign up
                 </a>
               </div>
@@ -180,5 +201,7 @@ const LoginForm: React.FC = () => {
     </div>
   );
 };
+
+
 
 export default LoginForm;

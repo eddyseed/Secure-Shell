@@ -10,19 +10,30 @@ import { Provider } from "@supabase/auth-js";
 import { ProviderIcon } from "@/components/provider-icon";
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from "react-hot-toast"
-import { useAppMetadata } from "@/context/AppMetadataContext"
 import Image from "next/image"
-const SignupForm: React.FC = () => {
+const isEmailValid = require('validator').isEmail;
+
+interface app_data {
+    client_name: string;
+    client_identifier: string;
+    redirect_uri: string;
+    oauth_provider: string[];
+    signup_image_url: string;
+}
+interface SignupProps {
+    app_data: app_data | null;
+    isValidClient: boolean;
+    error?: string;
+}
+const SignupForm: React.FC<SignupProps> = ({ app_data, isValidClient, error }: SignupProps) => {
     const [user, setUser] = useState({
         email: "",
         password: "",
     });
-    const { APP_NAME, OAUTH_PROVIDERS, SIGNUP_IMG_LINK } = useAppMetadata();
-    const providers = OAUTH_PROVIDERS
+
     const [isValidData, setIsValidData] = useState(false);
     const [loading, setLoading] = useState(false);
     const [confirmedPassword, setConfirmedPassword] = useState('');
-    // const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
     const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -72,7 +83,7 @@ const SignupForm: React.FC = () => {
         const { error } = await supabaseClient.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${process.env.PUBLIC_BASE_URI}`,
+                redirectTo: `${app_data?.redirect_uri}`,
             },
         });
         if (error) {
@@ -82,7 +93,11 @@ const SignupForm: React.FC = () => {
 
     }
     useEffect(() => {
-        setIsValidData(user.email.length > 0 && user.password.length > 0 && user.password == confirmedPassword);
+        setIsValidData(
+            isEmailValid(user.email) &&
+            user.password.length > 0 &&
+            user.password === confirmedPassword
+        );
     }, [user, confirmedPassword]);
 
 
@@ -96,7 +111,7 @@ const SignupForm: React.FC = () => {
                             <div className="flex flex-col items-center text-center">
                                 <h1 className="text-2xl font-bold">Create an account</h1>
                                 <p className="text-balance text-muted-foreground">
-                                    Sign up for your {APP_NAME} account
+                                    Sign up for your {app_data?.client_name} account
                                 </p>
                             </div>
                             <div className="grid gap-2">
@@ -135,32 +150,36 @@ const SignupForm: React.FC = () => {
                                 </span>
                             </div>
                             <div className="grid grid-rows-2 gap-4">
-                                {providers.map((provider) => (
-                                    <Button
-                                        key={provider}
-                                        type="button"
-                                        variant="outline"
-                                        className="w-full"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleOAuthLogin(provider as Provider);
-                                        }}
-                                    >
-                                        <ProviderIcon provider={provider as Provider} />
-                                        {`Login with ${provider.charAt(0).toUpperCase() + provider.slice(1)}`}
-                                    </Button>
-                                ))}
+                                {app_data?.oauth_provider.map((provider) => {
+                                    const formattedProvider = provider.charAt(0).toUpperCase() + provider.slice(1);
+
+                                    return (
+                                        <Button
+                                            key={provider}
+                                            type="button"
+                                            variant="outline"
+                                            className="w-full"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleOAuthLogin(formattedProvider as Provider);
+                                            }}
+                                        >
+                                            <ProviderIcon provider={formattedProvider as Provider} />
+                                            {`Login with ${formattedProvider}`}
+                                        </Button>
+                                    );
+                                })}
                             </div>
                             <div className="text-center text-sm">
                                 Already have an account?{" "}
-                                <a href="/login" className="underline underline-offset-4">
+                                <a href={`/login/client?id=${app_data?.client_identifier}`} className="underline underline-offset-4">
                                     Log in
                                 </a>
                             </div>
                         </div>
                     </form>
                     <div className="relative hidden bg-muted md:block">
-                        <Image src={SIGNUP_IMG_LINK} alt="Image" fill className="absolute inset-0 object-cover dark:brightness-[0.2] dark:grayscale"/>
+                        <Image src={app_data?.signup_image_url || ''} alt="Image" fill className="absolute inset-0 object-cover dark:brightness-[0.2] dark:grayscale" />
                     </div>
                 </CardContent>
             </Card>
