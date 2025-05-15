@@ -27,11 +27,9 @@ interface app_data {
 }
 interface LoginFormProps {
   app_data: app_data | null;
-  isValidClient: boolean;
-  error?: string;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ app_data, isValidClient, error }: LoginFormProps) => {
+const LoginForm: React.FC<LoginFormProps> = ({ app_data }: LoginFormProps) => {
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -109,8 +107,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ app_data, isValidClient, error }:
 
     setIsValidData(isEmailValid && isPasswordValid);
   }, [user]);
-  if (error) return <p>{error}</p>
-  if (!isValidClient) return <p>Invalid client ID</p>;
   return (
     <div className={"flex flex-col gap-6"}>
       <Toaster />

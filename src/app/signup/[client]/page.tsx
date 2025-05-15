@@ -4,12 +4,14 @@ import InternalServerError from "@/components/states/500";
 import { supabaseClient } from "@/config/dbConfig";
 
 
-export default async function SignupPage({ params, searchParams }: {
-  params: Promise<{ client: string }>
+export default async function SignupPage({ searchParams }: {
+  // params: Promise<{ client: string }>
   searchParams: Promise<{ id: string }>
 }) {
   const { id } = await searchParams;
-
+  if (!id) {
+    return <InvalidClientUI />;
+  }
   const { data, error } = await supabaseClient
     .from("clients")
     .select("*")
@@ -22,18 +24,10 @@ export default async function SignupPage({ params, searchParams }: {
   } else {
     console.log('Client data:', data);
   }
-
-
-  const isValid = !error && !!data;
-  if (!id) {
-    return <SignupForm app_data={null} isValidClient={false} error="Client ID is missing" />;
-  }
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
-        <SignupForm app_data={data}
-          isValidClient={isValid}
-          error={!isValid ? "Invalid or missing client ID" : undefined} />
+        <SignupForm app_data={data} />
       </div>
     </div>
   )

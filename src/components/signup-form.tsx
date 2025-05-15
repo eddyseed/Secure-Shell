@@ -11,8 +11,7 @@ import { ProviderIcon } from "@/components/provider-icon";
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from "react-hot-toast"
 import Image from "next/image"
-const isEmailValid = require('validator').isEmail;
-
+import { isEmail as isEmailValid } from 'validator';
 interface app_data {
     client_name: string;
     client_identifier: string;
@@ -22,10 +21,8 @@ interface app_data {
 }
 interface SignupProps {
     app_data: app_data | null;
-    isValidClient: boolean;
-    error?: string;
 }
-const SignupForm: React.FC<SignupProps> = ({ app_data, isValidClient, error }: SignupProps) => {
+const SignupForm: React.FC<SignupProps> = ({ app_data }: SignupProps) => {
     const [user, setUser] = useState({
         email: "",
         password: "",

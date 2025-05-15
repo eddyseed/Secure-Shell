@@ -4,8 +4,8 @@ import { supabaseClient } from "@/config/dbConfig";
 import InvalidClientUI from "@/components/states/404";
 import InternalServerError from "@/components/states/500";
 
-export default async function LoginPage({ params, searchParams }: {
-  params: Promise<{ client: string }>
+export default async function LoginPage({ searchParams }: {
+  // params: Promise<{ client: string }>
   searchParams: Promise<{ id: string }>
 }) {
   // const { client } = await params;
@@ -13,7 +13,7 @@ export default async function LoginPage({ params, searchParams }: {
 
 
   if (!id) {
-    return <LoginForm app_data={null} isValidClient={false} error="Client ID is missing" />;
+    return <InvalidClientUI/>;
   }
 
 
@@ -32,8 +32,6 @@ export default async function LoginPage({ params, searchParams }: {
   }
 
 
-  const isValid = !error && !!data;
-
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -44,11 +42,7 @@ export default async function LoginPage({ params, searchParams }: {
           {data.client_name || "Secure Shell"}
         </a>
 
-        <LoginForm
-          app_data={data}
-          isValidClient={isValid}
-          error={!isValid ? "Invalid or missing client ID" : undefined}
-        />
+        <LoginForm app_data={data}/>
       </div>
     </div>
   );
