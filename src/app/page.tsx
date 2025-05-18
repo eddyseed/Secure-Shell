@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Button } from "@/components/ui/button"
 import { useAuth } from '@/context/AuthContext';
 import { supabaseClient } from "@/config/dbConfig";
@@ -23,10 +24,8 @@ const Home: React.FC = () => {
       ) : (
       <div className="text-center">
         <h1>Please log in</h1>
-        <div className="mt-4">
-        <a href="/login" className="text-blue-500 hover:underline mr-4">Login</a>
-        <a href="/signup" className="text-blue-500 hover:underline">Sign Up</a>
-        </div>
+        <Link href="/login" className="text-blue-500 hover:underline mr-4">Login</Link>
+        <Link href="/signup" className="text-blue-500 hover:underline mr-4">Signup</Link>
       </div>
       )}
     </div>

@@ -47,7 +47,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ app_data }: LoginFormProps) => {
     const loginRequest = async () => {
       const response = await axios.post("/api/users/login", user);
       if (response.status === 200) {
-        console.log("Response data:", response.data);
+        const { error } = await supabaseClient.auth.setSession({
+          access_token: response.data.access_token,
+          refresh_token: response.data.refresh_token,
+        });
+        if (error) throw new Error("Failed to set session");
+
         return "Valid Credentials.";
       } else {
         throw new Error("Unexpected response. Please try again.");
@@ -77,7 +82,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ app_data }: LoginFormProps) => {
       },
     })
       .then(() => {
-        router.push("/");
+        router.push(`${app_data?.redirect_uri}`);
       })
       .finally(() => {
         setLoading(false);
@@ -100,12 +105,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ app_data }: LoginFormProps) => {
   }
   useEffect(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/;
 
     const isEmailValid = emailRegex.test(user.email);
-    const isPasswordValid = passwordRegex.test(user.password);
 
-    setIsValidData(isEmailValid && isPasswordValid);
+    setIsValidData(isEmailValid && user.password.length >= 6);
   }, [user]);
   return (
     <div className={"flex flex-col gap-6"}>

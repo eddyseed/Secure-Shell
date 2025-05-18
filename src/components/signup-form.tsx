@@ -40,7 +40,12 @@ const SignupForm: React.FC<SignupProps> = ({ app_data }: SignupProps) => {
         const signupRequest = async () => {
             const response = await axios.post("/api/users/signup", user);
             if (response.status === 200) {
-                console.log("Response data:", response.data);
+                const { error } = await supabaseClient.auth.setSession({
+                    access_token: response.data.access_token,
+                    refresh_token: response.data.refresh_token,
+                });
+                if (error) throw new Error("Failed to set session");
+
                 return "Valid Credentials.";
             } else {
                 throw new Error("Unexpected response. Please try again.");

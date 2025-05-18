@@ -26,8 +26,8 @@ export async function POST(request: NextRequest) {
         }
 
         const user = data?.user;
-        const token = data?.session?.access_token;
-
+        const access_token = data?.session?.access_token;
+        const refresh_token = data?.session?.refresh_token;
         if (!user) {
             return NextResponse.json(
                 { error: "User does not exist" },
@@ -35,15 +35,16 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (!token) {
+        if (!access_token) {
             return NextResponse.json(
                 { error: "Failed to fetch token" },
                 { status: 500 }
             );
         }
-
+        console.log("User: ", user)
+        console.log("Session: ", data?.session)
         return NextResponse.json(
-            { message: "Logged In successfully", success: true, data: user },
+            { message: "Logged In successfully", success: true, data: user, access_token, refresh_token },
             { status: 200 }
         );
 
